@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/notes'; 
+const API_BASE_URL = 'https://mini-notes-app-9d8e.onrender.com/notes'; 
 
 const NotesService = {
   async getAllNotes() {
