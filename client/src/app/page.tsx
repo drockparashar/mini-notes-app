@@ -24,6 +24,7 @@ export default function MiniNotesApp() {
     noteId: '',
     isDeleting: false,
   });
+
   useEffect(() => {
     console.log("Updated notes:", notes);
   }, [notes]);
@@ -32,7 +33,7 @@ export default function MiniNotesApp() {
     setLoading(true);
     try {
       const fetchedNotes = await NotesService.getAllNotes();
-      const transformedNotes: Note[] = fetchedNotes.map((note: any) => ({
+      const transformedNotes: Note[] = fetchedNotes.map((note: { _id: string; title: string; content: string; created_at: string }) => ({
         id: note._id,
         title: note.title,
         content: note.content,
@@ -42,13 +43,11 @@ export default function MiniNotesApp() {
       // Sort by creation date (newest first)
       transformedNotes.sort((a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    
-    setNotes(transformedNotes);
-
-
+      );
+      
+      setNotes(transformedNotes);
       setError('');
-    } catch (err) {
+    } catch {
       setError('Failed to load notes. Please refresh the page.');
     } finally {
       setLoading(false);
@@ -69,14 +68,12 @@ export default function MiniNotesApp() {
         createdAt: created.created_at,
       };
       setNotes([createdNote, ...notes]);
-    } catch (err) {
+    } catch {
       setError('Failed to create note. Please try again.');
-      throw err;
     }
   };
 
   const handleDeleteClick = (id: string) => {
-    console.log(id)
     setDeleteModal({
       isOpen: true,
       noteId: id,
@@ -91,7 +88,7 @@ export default function MiniNotesApp() {
       await NotesService.deleteNote(deleteModal.noteId);
       setNotes(notes.filter(note => note.id !== deleteModal.noteId));
       setDeleteModal({ isOpen: false, noteId: '', isDeleting: false });
-    } catch (err) {
+    } catch {
       setError('Failed to delete note. Please try again.');
       setDeleteModal({ ...deleteModal, isDeleting: false });
     }
@@ -126,7 +123,7 @@ export default function MiniNotesApp() {
                   <NoteCard 
                     key={note.id} 
                     note={note} 
-                    onDeleteClick={()=>handleDeleteClick(note.id)} 
+                    onDeleteClick={() => handleDeleteClick(note.id)} 
                   />
                 ))}
               </div>
